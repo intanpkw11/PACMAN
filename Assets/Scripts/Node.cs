@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Node[] aroundNodes;
+    public Vector2[] direction;
+
     void Start()
     {
-        
-    }
+        direction = new Vector2[aroundNodes.Length];
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        for (int i = 0; i < aroundNodes.Length; i++)
+        {
+            Node node = aroundNodes[i];
+            Vector2 distance = (node.transform.position - transform.position).normalized;
+            direction[i] = distance;
+        }
     }
 }

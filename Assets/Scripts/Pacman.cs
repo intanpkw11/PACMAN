@@ -7,35 +7,75 @@ public class Pacman : MonoBehaviour
     [SerializeField] private float speed;
 
     private Vector2 movement;
-    private Rigidbody2D rbPacman;
+    private Vector2 nextMovement;
 
-    [SerializeField] private Tile startTile;
+    [SerializeField] private GameObject startTile;
 
-    private int score;
+    public int Score { get; private set; }
 
-    public Tile TargetPosition { get; private set; }
+    private Node currentNode, nextNode, previousNode;
 
     private void Start()
     {
-        rbPacman = GetComponent<Rigidbody2D>();
         transform.position = startTile.GetComponent<Transform>().position;
+        currentNode = startTile.GetComponent<Node>();
         ResetMovementValue();
+        ChangePosition(movement);
     }
 
     private void Update()
     {
         CheckInput();
-    }
-    private void FixedUpdate()
-    {
-        Run();
+
+        SetScore(1);
     }
 
-    //fungsi untuk mengatur movement Pacman
-    void Run() 
+    //fungsi yang dipanggil pada Game Manager
+    public void Run()
     {
-        rbPacman.MovePosition(rbPacman.position + movement * speed * Time.fixedDeltaTime);
-        //rbPacman.MovePosition(TargetPosition.transform.position);
+        Move();
+    }
+
+    #region Movement
+    //fungsi untuk mengatur movement Pacman
+    void Move() 
+    {
+        if (nextNode != currentNode && nextNode != null)
+        {
+            if (ReachTargetNode())
+            {
+                currentNode = nextNode;
+
+                transform.position = currentNode.transform.position;
+
+                Node targetNode = GetNextNode(nextMovement);
+
+                if(targetNode != null)
+                {
+                    movement = nextMovement;
+                }
+
+                if(targetNode == null)
+                {
+                    targetNode = GetNextNode(movement);
+                } 
+
+                if(targetNode != null)
+                {
+                    nextNode = targetNode;
+                    previousNode = currentNode;
+                    currentNode = null;
+                }
+                else
+                {
+                    movement = Vector2.zero;
+                }
+            }
+            else
+            {
+                transform.position += (Vector3)(movement * speed * Time.deltaTime);
+            }
+        }
     }
 
     //fungsi untuk mengatur input movement Pacman
@@ -43,49 +83,122 @@ public class Pacman : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
-            SetMovementValue(0, 1);
+            ChangePosition(Vector2.up);
         } 
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            SetMovementValue(1, 0);
-        } 
+            ChangePosition(Vector2.right);
+        }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            SetMovementValue(0, -1);
-        } 
+            ChangePosition(Vector2.down);
+        }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            SetMovementValue(-1, 0);
+            ChangePosition(Vector2.left);
+        }
+    }
+   
+    //untuk mengambil target node di sekitar currentNode yang akan dituju
+    private Node GetNextNode(Vector2 dir)
+    {
+        Node targetNode = null;
+        
+        if(currentNode.aroundNodes.Length > 1)
+        {
+            for (int i = 0; i < currentNode.aroundNodes.Length; i++)
+            {
+                //untuk fixed vector normalized yang tidak return -1, 0, atau 1
+                if(currentNode.direction[i].x > 0.5f)
+                {
+                    currentNode.direction[i].x = 1;
+                } 
+                else if(currentNode.direction[i].x < -0.5f)
+                {
+                    currentNode.direction[i].x = -1;
+                }
+                else
+                {
+                    currentNode.direction[i].x = 0;
+                }
+
+                if (currentNode.direction[i].y > 0.5f)
+                {
+                    currentNode.direction[i].y = 1;
+                }
+                else if (currentNode.direction[i].y < -0.5f)
+                {
+                    currentNode.direction[i].y = -1;
+                }
+                else
+                {
+                    currentNode.direction[i].y = 0;
+                }
+
+                if (currentNode.direction[i] == dir)
+                {
+                    targetNode = currentNode.aroundNodes[i];
+                    break;
+                }
+            }
+        }
+        else
+        {
+            targetNode = currentNode.aroundNodes[0];
+        }
+
+        return targetNode;
+    }
+
+    //untuk set movement value dan node berikutnya
+    private void ChangePosition(Vector2 dir)
+    {
+        //menyimpan nilai vector movement yang telah diinputkan untuk dieksekusi setelahnya
+        if(dir != movement)
+        {
+            nextMovement = dir;
+        }
+
+        if (currentNode != null)
+        {
+            Node targetNode = GetNextNode(dir);
+
+            if(targetNode != null)
+            {
+                movement = dir;
+                nextNode = targetNode;
+                previousNode = currentNode;
+                currentNode = null;
+            }
         }
     }
 
-    //untuk konfigurasi variable vector2 movement
-    public void SetMovementValue(float x, float y)
+    //fungsi yang mengembalikan nilai panjang dari posisi node sekarang ke posisi node target
+    private float LengthFromNode(Vector2 targetPos)
     {
-        movement.x = x;
-        movement.y = y;
+        Vector2 length = targetPos - (Vector2)previousNode.transform.position;
+        return length.sqrMagnitude;
     }
 
-    public void SetTargetPosition(Tile targetPos)
+    //fungsi untuk mengecek apakah pacman telah mencapai node tujuan atau belum
+    private bool ReachTargetNode()
     {
-        TargetPosition = targetPos;
+        float nodeToTarget = LengthFromNode(nextNode.transform.position);
+        float nodeToSelf = LengthFromNode(transform.position);
+
+        return nodeToSelf > nodeToTarget;
     }
 
-    //untuk reset arah movement pada awal level
+    //untuk reset arah movement
     public void ResetMovementValue()
     {
-        SetMovementValue(1, 0);
+        movement = Vector2.right;
     }
+    #endregion
 
     //setter variable score
     public void SetScore(int s)
     {
-        score += s;
-    }
-
-    //getter variable score
-    public int GetScore()
-    {
-        return score;
+        Score += s;
     }
 }
