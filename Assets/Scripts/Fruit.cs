@@ -13,12 +13,9 @@ public class Fruit : MonoBehaviour, ISpawn
 
     //fungsi implementasi dari interface ISpawn.
     //dipanggil saat akan mengatur posisi spawn dari object fruit.
-    public void SpawnPosition()
+    public void SpawnPosition(Vector2 pos)
     {
-        float posX = Random.Range(-8.75f, 8.75f);
-        float posY = Random.Range(-3.6f, 3.6f);
-
-        transform.position = new Vector3(posX, posY, transform.position.z);
+        transform.position = pos;
     }
 
     //fungsi yang dpanggil saat akan men-destroy object fruit

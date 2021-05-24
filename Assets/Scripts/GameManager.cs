@@ -6,37 +6,29 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private Pacman player;
-    [SerializeField] private Text scoreValue;
+    private Board board;
+    [SerializeField] private Text scoresValue;
+    [SerializeField] private Text livesValue;
 
     private float timeDuration = 10;
 
     void Start()
     {
         player = FindObjectOfType<Pacman>();
+        board = FindObjectOfType<Board>();
     }
 
     private void Update()
     {
-        player.Run();
-        ShowScore();
-
-        timeDuration -= Time.deltaTime;
-        if(timeDuration <= 0)
-        {
-            //SpawnFruit();
-            timeDuration = 10;
-        }
+        player.Execute();
+        board.Execute();
+        ShowData();
     }
 
-    //fungsi yang dipanggil ketika ingin melakukan spawn fruit
-    void SpawnFruit()
+    //fungsi untuk menampilkan data score dan lives pacman
+    void ShowData()
     {
-        ObjectFactory.Instance.GetObject("Fruit");
-    }
-
-    //fungsi untuk menampilkan score
-    void ShowScore()
-    {
-        scoreValue.text = player.Score.ToString();
+        scoresValue.text = player.Scores.ToString();
+        livesValue.text = player.Lives.ToString();
     }
 }

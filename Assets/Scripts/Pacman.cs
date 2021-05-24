@@ -11,7 +11,8 @@ public class Pacman : MonoBehaviour
 
     [SerializeField] private GameObject startTile;
 
-    public int Score { get; private set; }
+    public int Scores { get; private set; }
+    public int Lives { get; private set; }
 
     private Node currentNode, nextNode, previousNode;
 
@@ -21,6 +22,8 @@ public class Pacman : MonoBehaviour
         currentNode = startTile.GetComponent<Node>();
         ResetMovementValue();
         ChangePosition(movement);
+
+        Lives = 3;
     }
 
     private void Update()
@@ -31,7 +34,7 @@ public class Pacman : MonoBehaviour
     }
 
     //fungsi yang dipanggil pada Game Manager
-    public void Run()
+    public void Execute()
     {
         Move();
     }
@@ -199,6 +202,12 @@ public class Pacman : MonoBehaviour
     //setter variable score
     public void SetScore(int s)
     {
-        Score += s;
+        Scores += s;
+    }
+
+    //setter lives
+    public void DecreaseLives(int l)
+    {
+        Lives -= l;
     }
 }

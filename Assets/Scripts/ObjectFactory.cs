@@ -23,13 +23,17 @@ public class ObjectFactory : MonoBehaviour
     #endregion
 
     [SerializeField] private Fruit fruitPrefab;
-    //[SerializeField] private Food foodPrefab;
 
-    public List<GameObject> objects;
+    public List<Transform> fruitPosition;
+
+    [SerializeField] private List<GameObject> objects;
+
+    private Board board;
 
     private void Start()
     {
         objects = new List<GameObject>();
+        board = FindObjectOfType<Board>();
         AddObjectToList();
     }
 
@@ -45,24 +49,16 @@ public class ObjectFactory : MonoBehaviour
                 {
                     //clone prefab
                     Fruit fruitObj = Instantiate(obj).GetComponent<Fruit>();
-                    fruitObj.SpawnPosition();
-                    StartCoroutine(DestroyFruit(fruitObj));
+                    int indexPos = Random.Range(0, fruitPosition.Count);
+                    Vector2 pos = fruitPosition[indexPos].position;
+                    fruitObj.SpawnPosition(pos);
+                    StartCoroutine(board.DestroyFruit(fruitObj));
 
                     //return prefab
                     return fruitObj;
                 }
             }
-        } else if(name == "Food")
-        {
-            foreach(GameObject obj in objects)
-            {
-                if (obj.name == name)
-                {
-                    //Food foodObj = Instantiate(obj).GetComponent<Food>();
-                    //return foodObj;
-                }
-            }
-        }
+        } 
         //tambahkan else if disini untuk create object dengan tipe ISpawn lainnya 
 
         return null;
@@ -72,17 +68,5 @@ public class ObjectFactory : MonoBehaviour
     void AddObjectToList()
     {
         objects.Add(fruitPrefab.gameObject);
-        //objects.Add(foodPrefab.gameObject);
-    }
-
-    //untuk menghapus atau men-destroy object fruit setelah spawn selama 3 detik.
-    //mungkin fungsi ini akan dipindahkan ke class Board
-    IEnumerator DestroyFruit(Fruit fruitObj)
-    {
-        if(fruitObj != null)
-        {
-            yield return new WaitForSeconds(5);
-            fruitObj.DestroyFruit();
-        }
     }
 }
