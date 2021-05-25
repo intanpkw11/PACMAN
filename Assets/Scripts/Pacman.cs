@@ -16,9 +16,12 @@ public class Pacman : MonoBehaviour
 
     private Node currentNode, nextNode, previousNode;
 
+    private Pellet startPosition;
+
     private void Start()
     {
-        transform.position = startTile.GetComponent<Transform>().position;
+        startPosition = startTile.GetComponent<Pellet>();
+        transform.position = startPosition.transform.position;
         currentNode = startTile.GetComponent<Node>();
         ResetMovementValue();
         ChangePosition(movement);
@@ -29,14 +32,13 @@ public class Pacman : MonoBehaviour
     private void Update()
     {
         CheckInput();
-
-        SetScore(1);
     }
 
     //fungsi yang dipanggil pada Game Manager
     public void Execute()
     {
         Move();
+        SetScore(1);
     }
 
     #region Movement
@@ -197,6 +199,16 @@ public class Pacman : MonoBehaviour
     {
         movement = Vector2.right;
     }
+
+    //untuk restart position pacman ke posisi awal
+    public void RestartPosition()
+    {
+        transform.position = startPosition.transform.position;
+
+        currentNode = startPosition.GetComponent<Node>();
+        ResetMovementValue();
+        ChangePosition(movement);
+    }
     #endregion
 
     //setter variable score
@@ -209,5 +221,15 @@ public class Pacman : MonoBehaviour
     public void DecreaseLives(int l)
     {
         Lives -= l;
+    }
+
+
+    //fungsi built-in untuk deteksi saat collide dengan ghost, pacman kembali ke posisi awal
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ghost"))
+        {
+            RestartPosition();
+        }
     }
 }
