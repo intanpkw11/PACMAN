@@ -5,7 +5,6 @@ using UnityEngine;
 public class Pellet : MonoBehaviour
 {
     public bool isEnergizerPellet;
-    public bool isNode;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

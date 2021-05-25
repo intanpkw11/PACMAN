@@ -65,7 +65,6 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Board.cs" />
     <Compile Include="Assets\Scripts\Fruit.cs" />
-    <Compile Include="Assets\Scripts\GameBoard.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\ISpawn.cs" />
     <Compile Include="Assets\Scripts\Node.cs" />
