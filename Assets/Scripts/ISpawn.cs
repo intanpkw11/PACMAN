@@ -5,5 +5,5 @@ using UnityEngine;
 //class interface untuk object food, fruit, dan enemy
 public interface ISpawn
 {
-    void SpawnPosition();
+    void SpawnPosition(Vector2 pos);
 }

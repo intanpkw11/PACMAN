@@ -6,37 +6,70 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private Pacman player;
-    [SerializeField] private Text scoreValue;
+    private Board board;
+    [SerializeField] private Text scoresValue;
+    [SerializeField] private Text livesValue;
+    [SerializeField] private Text winText;
+    [SerializeField] private Text gameoverText;
 
-    private float timeDuration = 10;
+    [SerializeField] private List<Pellet> pellets;
 
     void Start()
     {
         player = FindObjectOfType<Pacman>();
+        board = FindObjectOfType<Board>();
+        Pellet[] pelletObj = FindObjectsOfType<Pellet>();
+
+        foreach(Pellet obj in pelletObj)
+        {
+            pellets.Add(obj);
+        }
     }
 
     private void Update()
     {
-        player.Run();
-        ShowScore();
+        player.Execute();
+        board.Execute();
+        //CheckPelletsList();
+        WinLoseCondition();
+        ShowData();
+    }
 
-        timeDuration -= Time.deltaTime;
-        if(timeDuration <= 0)
+    //fungsi untuk menampilkan data score dan lives pacman
+    void ShowData()
+    {
+        scoresValue.text = player.Scores.ToString();
+        livesValue.text = player.Lives.ToString();
+    }
+
+    private List<Pellet> CheckPelletsList()
+    {
+        List<Pellet> removePellet = new List<Pellet>();
+
+        foreach (Pellet p in pellets)
         {
-            //SpawnFruit();
-            timeDuration = 10;
+            if (!p.GetComponent<SpriteRenderer>().enabled)
+            {
+                removePellet.Add(p);
+            }
         }
+
+        return removePellet;
     }
 
-    //fungsi yang dipanggil ketika ingin melakukan spawn fruit
-    void SpawnFruit()
+    private void WinLoseCondition()
     {
-        ObjectFactory.Instance.GetObject("Fruit");
-    }
+        if(CheckPelletsList().Count == pellets.Count && player.Lives > 0)
+        {
+            winText.gameObject.SetActive(true);
+            Time.timeScale = 0;
+        }
+        else if(player.Lives <= 0)
+        {
+            gameoverText.gameObject.SetActive(true);
+            Time.timeScale = 0;
+        }
 
-    //fungsi untuk menampilkan score
-    void ShowScore()
-    {
-        scoreValue.text = player.Score.ToString();
+        
     }
 }
