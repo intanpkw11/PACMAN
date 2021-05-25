@@ -48977,6 +48977,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: sprite_1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8295929262048633753, guid: ba0ad8b7ef63d234788c4296c2af1cc0,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba0ad8b7ef63d234788c4296c2af1cc0, type: 3}
 --- !u!4 &2013826875 stripped
@@ -53340,6 +53345,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: sprite_1 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8295929262048633753, guid: ba0ad8b7ef63d234788c4296c2af1cc0,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba0ad8b7ef63d234788c4296c2af1cc0, type: 3}

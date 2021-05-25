@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private List<Pellet> pellets;
 
+    private bool gameIsOver = false;
+
     void Start()
     {
         player = FindObjectOfType<Pacman>();
@@ -28,10 +30,13 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        player.Execute();
-        board.Execute();
-        //CheckPelletsList();
-        WinLoseCondition();
+        if (!gameIsOver)
+        {
+            player.Execute();
+            board.Execute();
+            WinLoseCondition();
+        }
+        
         ShowData();
     }
 
@@ -42,6 +47,7 @@ public class GameManager : MonoBehaviour
         livesValue.text = player.Lives.ToString();
     }
 
+    //untuk cek jumlah pellet yang telah di 
     private List<Pellet> CheckPelletsList()
     {
         List<Pellet> removePellet = new List<Pellet>();
@@ -62,14 +68,12 @@ public class GameManager : MonoBehaviour
         if(CheckPelletsList().Count == pellets.Count && player.Lives > 0)
         {
             winText.gameObject.SetActive(true);
-            Time.timeScale = 0;
+            gameIsOver = true;
         }
         else if(player.Lives <= 0)
         {
             gameoverText.gameObject.SetActive(true);
-            Time.timeScale = 0;
-        }
-
-        
+            gameIsOver = true;
+        }  
     }
 }

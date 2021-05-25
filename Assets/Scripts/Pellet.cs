@@ -6,6 +6,7 @@ public class Pellet : MonoBehaviour
 {
     public bool isEnergizerPellet;
 
+    //untuk deteksi trigger pada pellet
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
