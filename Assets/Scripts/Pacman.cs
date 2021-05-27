@@ -43,7 +43,7 @@ public class Pacman : MonoBehaviour
 
     #region Movement
     //fungsi untuk mengatur movement Pacman
-    void Move() 
+    private void Move() 
     {
         if (nextNode != currentNode && nextNode != null)
         {
@@ -84,7 +84,7 @@ public class Pacman : MonoBehaviour
     }
 
     //fungsi untuk mengatur input movement Pacman
-    void CheckInput() 
+    private void CheckInput() 
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -198,6 +198,11 @@ public class Pacman : MonoBehaviour
     public void ResetMovementValue()
     {
         movement = Vector2.right;
+    }
+
+    public Vector2 GetMovementValue()
+    {
+        return movement;
     }
 
     //untuk restart position pacman ke posisi awal
