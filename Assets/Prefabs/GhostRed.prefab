@@ -10,7 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6336600230284422481}
   - component: {fileID: 4096971086778229075}
-  - component: {fileID: -995203346697334719}
+  - component: {fileID: -2122940534799215302}
+  - component: {fileID: 5644298070185509989}
+  - component: {fileID: -916224250262945298}
   m_Layer: 0
   m_Name: GhostRed
   m_TagString: Ghost
@@ -82,7 +84,33 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-995203346697334719
+--- !u!61 &-2122940534799215302
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2316300123968773299}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.011885166, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.28, y: 1.28}
+    newSize: {x: 1.28, y: 1.28}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.0304193, y: 1.28}
+  m_EdgeRadius: 0
+--- !u!114 &5644298070185509989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,17 +119,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2316300123968773299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c2800a47eb4243408f034ca96cea1a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 9beafc880722af34f9c7faf95cc19ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3.9
+  moveSpeed: 6
+  frightenedModeMoveSpeed: 3.5
   pinkyReleaseTimer: 5
   inkyReleaseTimer: 14
   clydeReleaseTimer: 21
   ghostReleaseTimer: 0
+  frightenedModeDuration: 10
+  startBlinkingAt: 7
   isInGhostHouse: 0
-  startingPosition: {fileID: 0}
-  homeNode: {fileID: 0}
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -109,4 +138,27 @@ MonoBehaviour:
   scatterModeTimer3: 5
   chaseModeTimer3: 20
   scatterModeTimer4: 5
+  ghost: {fileID: 9100000, guid: 196aba0a354591c4cb22ba1b8ad37526, type: 2}
+  ghostWhite: {fileID: 9100000, guid: 727b4b717a9c51743ba86cac183792ad, type: 2}
+  ghostBlue: {fileID: 9100000, guid: c25419cb89c85ed4d9afddcf2d518e0d, type: 2}
+  currentMode: 1
   ghostType: 0
+--- !u!95 &-916224250262945298
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2316300123968773299}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

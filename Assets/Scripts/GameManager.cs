@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     private Pacman player;
     private Board board;
+    [SerializeField] private Ghost[] ghosts;
     [SerializeField] private Text scoresValue;
     [SerializeField] private Text livesValue;
     [SerializeField] private Text winText;
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     {
         player = FindObjectOfType<Pacman>();
         board = FindObjectOfType<Board>();
+        ghosts = FindObjectsOfType<Ghost>();
         Pellet[] pelletObj = FindObjectsOfType<Pellet>();
 
         foreach(Pellet obj in pelletObj)
@@ -30,10 +32,15 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        //saat gameIsOver = false, jalankan semua aktivitas game
         if (!gameIsOver)
         {
             player.Execute();
             board.Execute();
+            foreach(Ghost g in ghosts)
+            {
+                g.Execute();
+            }
             WinLoseCondition();
         }
         
@@ -47,7 +54,7 @@ public class GameManager : MonoBehaviour
         livesValue.text = player.Lives.ToString();
     }
 
-    //untuk cek jumlah pellet yang telah di 
+    //return jumlah pellet yang telah di enable, untuk di cek dengan total pellet yang ada
     private List<Pellet> CheckPelletsList()
     {
         List<Pellet> removePellet = new List<Pellet>();

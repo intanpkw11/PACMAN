@@ -23,8 +23,14 @@ public class ObjectFactory : MonoBehaviour
     #endregion
 
     [SerializeField] private Fruit fruitPrefab;
+    [SerializeField] private Ghost ghostRedPrefab;
+    [SerializeField] private Ghost ghostBluePrefab;
+    [SerializeField] private Ghost ghostPinkPrefab;
+    [SerializeField] private Ghost ghostOrangePrefab;
 
     public List<Transform> fruitPosition;
+
+    public List<Node> ghostPosition;
 
     [SerializeField] private List<GameObject> objects;
 
@@ -38,7 +44,7 @@ public class ObjectFactory : MonoBehaviour
     }
 
     //fungsi yang dipanggil ketika akan men-create object melalui factory 
-    public ISpawn GetObject(string name)
+    public ISpawn GetObject(string name) 
     {
         if (name == "Fruit")
         {
@@ -59,6 +65,58 @@ public class ObjectFactory : MonoBehaviour
                 }
             }
         } 
+        else if(name == "GhostRed")
+        {
+            foreach (GameObject obj in objects)
+            {
+                if (obj.name == name)
+                {
+                    Ghost g = Instantiate(obj).GetComponent<Ghost>();
+                    g.SpawnPosition(ghostPosition[0].transform.position);
+
+                    return g;
+                }
+            }
+        }
+        else if (name == "GhostOrange")
+        {
+            foreach (GameObject obj in objects)
+            {
+                if (obj.name == name)
+                {
+                    Ghost g = Instantiate(obj).GetComponent<Ghost>();
+                    g.SpawnPosition(ghostPosition[1].transform.position);
+
+                    return g;
+                }
+            }
+        }
+        else if (name == "GhostPink")
+        {
+            foreach (GameObject obj in objects)
+            {
+                if (obj.name == name)
+                {
+                    Ghost g = Instantiate(obj).GetComponent<Ghost>();
+                    g.SpawnPosition(ghostPosition[2].transform.position);
+
+                    return g;
+                }
+            }
+        }
+        else if (name == "GhostBlue")
+        {
+            foreach (GameObject obj in objects)
+            {
+                if (obj.name == name)
+                {
+                    Ghost g = Instantiate(obj).GetComponent<Ghost>();
+                    g.SpawnPosition(ghostPosition[3].transform.position);
+
+                    return g;
+                }
+            }
+        }
         //tambahkan else if disini untuk create object dengan tipe ISpawn lainnya 
 
         return null;
@@ -68,5 +126,9 @@ public class ObjectFactory : MonoBehaviour
     void AddObjectToList()
     {
         objects.Add(fruitPrefab.gameObject);
+        objects.Add(ghostRedPrefab.gameObject);
+        objects.Add(ghostBluePrefab.gameObject);
+        objects.Add(ghostPinkPrefab.gameObject);
+        objects.Add(ghostOrangePrefab.gameObject);
     }
 }

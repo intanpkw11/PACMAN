@@ -225,16 +225,30 @@ public class Pacman : MonoBehaviour
     //setter lives
     public void DecreaseLives(int l)
     {
+        if (Lives == 0)
+        {
+            Lives = 0;
+        }
+
         Lives -= l;
     }
-
 
     //fungsi built-in untuk deteksi saat collide dengan ghost, pacman kembali ke posisi awal
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Ghost"))
         {
-            RestartPosition();
+            if(collision.gameObject.GetComponent<Ghost>().currentMode == Ghost.Mode.Chase || collision.gameObject.GetComponent<Ghost>().currentMode == Ghost.Mode.Scatter)
+            {
+                RestartPosition();
+                DecreaseLives(1);
+            } 
+            else if(collision.gameObject.GetComponent<Ghost>().currentMode == Ghost.Mode.Frightened)
+            {
+                Ghost g = collision.gameObject.GetComponent<Ghost>();
+                g.ResetPosition();
+                Scores += 500;
+            }
         }
     }
 }

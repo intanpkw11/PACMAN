@@ -18,6 +18,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: d6812b6c7863095428a7966ab347b0df,
         type: 3}
+    - target: {fileID: 5644298070185509989, guid: dde39c2f388e38e4098e78a19dc59947,
+        type: 3}
+      propertyPath: ghost
+      value: 
+      objectReference: {fileID: 9100000, guid: 8afacf2c514d9714d9c46b450f885f3d, type: 2}
+    - target: {fileID: 5644298070185509989, guid: dde39c2f388e38e4098e78a19dc59947,
+        type: 3}
+      propertyPath: ghostType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644298070185509989, guid: dde39c2f388e38e4098e78a19dc59947,
+        type: 3}
+      propertyPath: isInGhostHouse
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6336600230284422481, guid: dde39c2f388e38e4098e78a19dc59947,
         type: 3}
       propertyPath: m_RootOrder
