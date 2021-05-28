@@ -7,10 +7,10 @@ public class Ghost : MonoBehaviour, ISpawn
     public float moveSpeed = 6f;
     public float frightenedModeMoveSpeed = 3.5f;
 
-    public int pinkyReleaseTimer = 5;
-    public int inkyReleaseTimer = 14;
-    public int clydeReleaseTimer = 21;
-    public float ghostReleaseTimer = 0;
+    public int pinkReleaseTimer = 5;
+    public int blueReleaseTimer = 14;
+    public int orangeReleaseTimer = 21;
+    public float redReleaseTimer = 0;
 
     public int frightenedModeDuration = 10;
     public int startBlinkingAt = 7;
@@ -19,19 +19,13 @@ public class Ghost : MonoBehaviour, ISpawn
 
     private Node startingPosition;
 
-    public int scatterModeTimer1 = 7;
-    public int chaseModeTimer1 = 20;
-    public int scatterModeTimer2 = 7;
-    public int chaseModeTimer2 = 20;
-    public int scatterModeTimer3 = 5;
-    public int chaseModeTimer3 = 20;
-    public int scatterModeTimer4 = 5;
+    public int scatterModeTimer = 7;
+    public int chaseModeTimer = 20;
 
     public RuntimeAnimatorController ghost;
     public RuntimeAnimatorController ghostWhite;
     public RuntimeAnimatorController ghostBlue;
 
-    private int modeChangeIteration = 1;
     private float modeChangeTimer = 0;
 
     private float frightenedModeTimer = 0;
@@ -148,63 +142,16 @@ public class Ghost : MonoBehaviour, ISpawn
         if (currentMode != Mode.Frightened)
         {
             modeChangeTimer += Time.deltaTime;
-            
-            if (modeChangeIteration == 1)
-            {
-                if (currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer1)
+                if (currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer)
                 {
                     ChangeMode(Mode.Chase);
                     modeChangeTimer = 0;
                 }
-
-                if (currentMode == Mode.Chase && modeChangeTimer > chaseModeTimer1)
+                if (currentMode == Mode.Chase && modeChangeTimer > chaseModeTimer)
                 {
-                    modeChangeIteration = 2;
                     ChangeMode(Mode.Scatter);
                     modeChangeTimer = 0;
                 }
-            }
-
-            else if (modeChangeIteration == 2 ) 
-            {
-                if (currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer2)
-                {
-                    ChangeMode(Mode.Chase);
-                    modeChangeTimer = 0;
-                }
-
-                if (currentMode == Mode.Chase && modeChangeTimer > chaseModeTimer2)
-                {
-                    modeChangeIteration = 3;
-                    ChangeMode(Mode.Scatter);
-                    modeChangeTimer = 0;
-                }
-            }
-            
-            else if (modeChangeIteration == 3)
-            {
-                if (currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer3)
-                {
-                    ChangeMode(Mode.Chase);
-                    modeChangeTimer = 0;
-                }
-
-                if (currentMode == Mode.Chase && modeChangeTimer > chaseModeTimer3)
-                {
-                    modeChangeIteration = 4;
-                    ChangeMode(Mode.Scatter);
-                    modeChangeTimer = 0;
-                }
-            }
-
-            else if (modeChangeIteration == 4)
-            {
-                if (currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer4)
-                {
-                    ChangeMode(Mode.Chase);
-                    modeChangeTimer = 0;
-                }
-            }
         }
 
         else if (currentMode == Mode.Frightened) 
@@ -328,9 +275,8 @@ public class Ghost : MonoBehaviour, ISpawn
 
     Vector2 GetPinkGhostTargetTile()
     {
-        //berjarak 4 tile di depan pacman
-        // Four tiles ahead Pacman
-        // Taking account Position and Orientation
+        // berjarak 4 tile di depan pacman
+        // memperhatikan Posisi dan Orientasi dari pacman
 
         Vector2 pacManPosition = pacMan.transform.localPosition;
         Vector2 pacManOrientation = pacMan.GetComponent<Pacman>().GetMovementValue();
@@ -346,9 +292,9 @@ public class Ghost : MonoBehaviour, ISpawn
 
     Vector2 GetBlueGhostTargetTile()
     {
-        // Select the position two tiles in front of Pacman
-        // Draw vector from blinky to that position
-        // Duble the length of the vector
+        // memilih posisi dua tile di depan Pacman
+        // menggambar vektor dari blinky ke posisi dua tile di depan Pacman
+        // menggandakan panjang vektor
 
         Vector2 pacManPosition = pacMan.transform.localPosition;
         Vector2 pacManOrientation = pacMan.GetComponent<Pacman>().GetMovementValue();
@@ -359,28 +305,28 @@ public class Ghost : MonoBehaviour, ISpawn
         Vector2 pacManTile = new Vector2(pacManPositionX, pacManPositionY);
         Vector2 targetTile = pacManTile + (2 * pacManOrientation);
 
-        // Temporary Blinky Position
+        // posisi ghost blue sementara
 
-        Vector2 blinkyPosition = GameObject.Find("GhostBlue(Clone)").transform.localPosition;
+        Vector2 bluePosition = GameObject.Find("GhostBlue(Clone)").transform.localPosition;
 
-        int tempBlinkyPositionX = Mathf.RoundToInt(blinkyPosition.x);
-        int tempBlinkyPositionY = Mathf.RoundToInt(blinkyPosition.y);
+        int tempBluePositionX = Mathf.RoundToInt(bluePosition.x);
+        int tempBluePositionY = Mathf.RoundToInt(bluePosition.y);
 
-        blinkyPosition = new Vector2(tempBlinkyPositionX, tempBlinkyPositionY);
+        bluePosition = new Vector2(tempBluePositionX, tempBluePositionY);
 
-        float distance = GetDistance(blinkyPosition, targetTile);
+        float distance = GetDistance(bluePosition, targetTile);
         distance *= 2;
 
-        targetTile = new Vector2(blinkyPosition.x + distance, blinkyPosition.y + distance);
+        targetTile = new Vector2(bluePosition.x + distance, bluePosition.y + distance);
 
         return targetTile;
     }
 
     Vector2 GetOrangeGhostTargetTile()
     {
-        // Calculate the distance from Pacman
-        // If the distance is greather than eight tiles targeting is the same as Blinky
-        // If the distance is less than eight tiles, then target is his home node, so same as scatter mode.
+        // menghitung jarak dari Pacman
+        // jika jarak lebih jauh dari delapan tile, penargetan sama dengan Blinky
+        // jika jaraknya kurang dari delapan tile, maka targetnya adalah simpul asalnya, jadi sama seperti mode scatter.
 
         Vector2 pacManPosition = pacMan.transform.localPosition;
 
@@ -451,15 +397,15 @@ public class Ghost : MonoBehaviour, ISpawn
 
     void ReleaseGhosts()
     {
-        ghostReleaseTimer += Time.deltaTime;
+        redReleaseTimer += Time.deltaTime;
 
-        if (ghostReleaseTimer > pinkyReleaseTimer)
+        if (redReleaseTimer > pinkReleaseTimer)
             ReleasePinkGhost();
 
-        if (ghostReleaseTimer > inkyReleaseTimer)
+        if (redReleaseTimer > blueReleaseTimer)
             ReleaseBlueGhost();
 
-        if (ghostReleaseTimer > clydeReleaseTimer)
+        if (redReleaseTimer > orangeReleaseTimer)
             ReleaseOrangeGhost();
     }
     #endregion
