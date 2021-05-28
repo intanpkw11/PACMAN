@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     }
 
     //fungsi untuk menampilkan data score dan lives pacman
-    void ShowData()
+    private void ShowData()
     {
         scoresValue.text = player.Scores.ToString();
         livesValue.text = player.Lives.ToString();

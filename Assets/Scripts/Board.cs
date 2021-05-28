@@ -18,6 +18,7 @@ public class Board : MonoBehaviour
     }
 
     #region Ghost
+    //fungsi untuk create object (Ghost) dengan menggunakan factory pattern
     private void SpawnGhost()
     {
         ObjectFactory.Instance.GetObject("GhostRed");

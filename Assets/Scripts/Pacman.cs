@@ -223,7 +223,7 @@ public class Pacman : MonoBehaviour
     }
 
     //setter lives
-    public void DecreaseLives(int l)
+    void DecreaseLives(int l)
     {
         if (Lives == 0)
         {

@@ -38823,13 +38823,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fruitPrefab: {fileID: 5188276201623382558, guid: 301fb70ec6751ce4dad28f7b75b458fb,
     type: 3}
-  ghostRedPrefab: {fileID: 5644298070185509989, guid: dde39c2f388e38e4098e78a19dc59947,
+  ghostRedPrefab: {fileID: -7473150502201626433, guid: dde39c2f388e38e4098e78a19dc59947,
     type: 3}
-  ghostBluePrefab: {fileID: 4352278729953436273, guid: 5c1b80548cde8ba4885bddd7fad71739,
+  ghostBluePrefab: {fileID: 7672159544041346731, guid: 5c1b80548cde8ba4885bddd7fad71739,
     type: 3}
-  ghostPinkPrefab: {fileID: 7669381196508374827, guid: 265017758aa5b8e4cbb6e63fc91fba53,
+  ghostPinkPrefab: {fileID: 4355411396114568177, guid: 265017758aa5b8e4cbb6e63fc91fba53,
     type: 3}
-  ghostOrangePrefab: {fileID: 5856182715042191760, guid: 54ec854fcd437ea4bbdd54a146b76c66,
+  ghostOrangePrefab: {fileID: 530242919294479690, guid: 54ec854fcd437ea4bbdd54a146b76c66,
     type: 3}
   fruitPosition:
   - {fileID: 1326281649}
