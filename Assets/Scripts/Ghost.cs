@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class Ghost : MonoBehaviour, ISpawn
 {
-    public float moveSpeed = 3.9f;
+    public float moveSpeed = 6f;
+    public float frightenedModeMoveSpeed = 3.5f;
 
     public int pinkyReleaseTimer = 5;
     public int inkyReleaseTimer = 14;
     public int clydeReleaseTimer = 21;
     public float ghostReleaseTimer = 0;
 
+    public int frightenedModeDuration = 10;
+    public int startBlinkingAt = 7;
+
     public bool isInGhostHouse = false;
 
-    public Node startingPosition;
-    public Node homeNode;
+    private Node startingPosition;
 
     public int scatterModeTimer1 = 7;
     public int chaseModeTimer1 = 20;
@@ -24,14 +27,21 @@ public class Ghost : MonoBehaviour, ISpawn
     public int chaseModeTimer3 = 20;
     public int scatterModeTimer4 = 5;
 
-    //public RuntimeAnimatorController ghostUp;
-    //public RuntimeAnimatorController ghostDown;
-    //public RuntimeAnimatorController ghostLeft;
-    //public RuntimeAnimatorController ghostRight;
+    public RuntimeAnimatorController ghost;
+    public RuntimeAnimatorController ghostWhite;
+    public RuntimeAnimatorController ghostBlue;
 
     private int modeChangeIteration = 1;
     private float modeChangeTimer = 0;
 
+    private float frightenedModeTimer = 0;
+    private float blinkTimer = 0;
+
+    private bool frightenedModeIsWhite = false;
+
+    private float previousMoveSpeed;
+
+    //enum Mode
     public enum Mode
     {
         Chase,
@@ -39,9 +49,10 @@ public class Ghost : MonoBehaviour, ISpawn
         Frightened 
     }
 
-    Mode currentMode = Mode.Scatter;
+    public Mode currentMode = Mode.Scatter;
     Mode previousMode;
 
+    //enum Type Ghost
     public enum GhostType
     {
         Red,
@@ -55,17 +66,15 @@ public class Ghost : MonoBehaviour, ISpawn
     private GameObject pacMan;
 
     private Node currentNode, targetNode, previousNode;
-    private Vector2 direction, nextDirection;
+    private Vector2 direction;
 
-    // Start is called before the first frame update
     void Start()
     {
         pacMan = FindObjectOfType<Pacman>().gameObject;
-
-        //Node node = GetNodeAtPosition(transform.localPosition);
+        startingPosition = SetStartingPosition();
 
         Node node = startingPosition;
-        transform.position = startingPosition.transform.position;
+        SpawnPosition(startingPosition.transform.position);
 
         if (node != null)
         {
@@ -75,16 +84,7 @@ public class Ghost : MonoBehaviour, ISpawn
         if (isInGhostHouse)
         {
             targetNode = currentNode.aroundNodes[0];
-            if(ghostType == GhostType.Blue)
-            {
-                direction = Vector2.left;
-            } else if(ghostType == GhostType.Pink)
-            {
-                direction = Vector2.right;
-            } else if(ghostType == GhostType.Orange)
-            {
-                direction = Vector2.up;
-            }
+            direction = SetDirection();
         }
         else
         {
@@ -93,41 +93,31 @@ public class Ghost : MonoBehaviour, ISpawn
         }
 
         previousNode = currentNode;
-        //UpdateAnimatorController();
+        UpdateAnimatorController();
     }
 
-    // Update is called once per frame
-    void Update()
+    //fungsi yang dipanggil pada Game Manager
+    public void Execute()
     {
         ModeUpdate();
         Move();
         ReleaseGhosts();
     }
 
-    /*void UpdateAnimatorController()
+    //untuk update kontrol animasi 
+    void UpdateAnimatorController()
     {
-        if (direction == Vector2.up)
+        if (currentMode != Mode.Frightened)
         {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostUp;
-        }
-        else if (direction == Vector2.down)
-        {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostDown;
-        }
-        else if (direction == Vector2.left)
-        {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
-        }
-        else if (direction == Vector2.right)
-        {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostRight;
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghost;
         }
         else
         {
-            transform.GetComponent<Animator>().runtimeAnimatorController = ghostLeft;
+            transform.GetComponent<Animator>().runtimeAnimatorController = ghostBlue;
         }
-    }*/
+    }
 
+    //mengatur movement ghost
     void Move()
     {
         if (targetNode != currentNode && targetNode != null && !isInGhostHouse)
@@ -138,18 +128,10 @@ public class Ghost : MonoBehaviour, ISpawn
 
                 transform.localPosition = currentNode.transform.position;
 
-                //GameObject otherPortal = GetPortal(currentNode.transform.position);
-
-                /*if (otherPortal != null)
-                {
-                    transform.localPosition = otherPortal.transform.position;
-                    currentNode = otherPortal.GetComponent<Node> ();
-                }*/
-
                 targetNode = ChooseNextNode();
                 previousNode = currentNode;
                 currentNode = null;
-                //UpdateAnimatorController();
+                UpdateAnimatorController();
             }
 
             else
@@ -160,6 +142,7 @@ public class Ghost : MonoBehaviour, ISpawn
         }
     }
 
+    //untuk cek mode yang sedang aktif
     void ModeUpdate()
     {
         if (currentMode != Mode.Frightened)
@@ -226,17 +209,117 @@ public class Ghost : MonoBehaviour, ISpawn
 
         else if (currentMode == Mode.Frightened) 
         {
+            frightenedModeTimer += Time.deltaTime;
 
+            if (frightenedModeTimer >= frightenedModeDuration)
+            {
+                frightenedModeTimer = 0;
+                ChangeMode(previousMode);
+            }
+
+            if (frightenedModeTimer >= startBlinkingAt)
+            {
+                blinkTimer += Time.deltaTime;
+
+                if (blinkTimer >= 0.1f)
+                {
+                    blinkTimer = 0f;
+
+                    if (frightenedModeIsWhite)
+                    {
+                        transform.GetComponent<Animator>().runtimeAnimatorController = ghostBlue;
+                        frightenedModeIsWhite = false;
+                    }
+
+                    else
+                    {
+                        transform.GetComponent<Animator>().runtimeAnimatorController = ghostWhite;
+                        frightenedModeIsWhite = true;
+                    }
+                }
+            }
         }
     }
 
+    //untuk mengubah mode ghost sesuai kondisi tertentu
     void ChangeMode (Mode m)
     {
+        if (currentMode == Mode.Frightened)
+        {
+            moveSpeed = previousMoveSpeed;
+        }
+
+        if (m == Mode.Frightened)
+        {
+            previousMoveSpeed = moveSpeed;
+            moveSpeed = frightenedModeMoveSpeed;
+        }
+
+        previousMode = currentMode;
         currentMode = m;
+
+        if(previousMode == Mode.Frightened)
+        {
+            previousMode = Mode.Chase;
+        }
+
+        UpdateAnimatorController();
     }
 
+    //setting direction berdasarkan type ghost
+    Vector2 SetDirection()
+    {
+        if (ghostType == GhostType.Orange)
+        {
+            direction = Vector2.left;
+        }
+        else if (ghostType == GhostType.Pink)
+        {
+            direction = Vector2.right;
+        }
+        else if (ghostType == GhostType.Blue)
+        {
+            direction = Vector2.up;
+        }
+        else if (ghostType == GhostType.Red)
+        {
+            direction = Vector2.left;
+        }
+
+        return direction;
+    }
+
+    //setting starting position node berdasarkan type ghost
+    Node SetStartingPosition()
+    {
+        if (ghostType == GhostType.Orange)
+        {
+            startingPosition = GameObject.Find("OrangePos").GetComponent<Node>();
+        }
+        else if (ghostType == GhostType.Pink)
+        {
+            startingPosition = GameObject.Find("PinkPos").GetComponent<Node>();
+        }
+        else if (ghostType == GhostType.Blue)
+        {
+            startingPosition = GameObject.Find("BluePos").GetComponent<Node>();
+        }
+        else if (ghostType == GhostType.Red)
+        {
+            startingPosition = GameObject.Find("RedPos").GetComponent<Node>();
+        }
+        return startingPosition;
+    }
+
+    public void StartFrightenedMode()
+    {
+        ChangeMode(Mode.Frightened);
+    }
+
+    #region Target Node Position
     Vector2 GetRedGhostTargetTile()
     {
+        //mengejar pacman
         Vector2 pacManPosition = pacMan.transform.localPosition;
         Vector2 targetTile = new Vector2(Mathf.RoundToInt(pacManPosition.x), Mathf.RoundToInt(pacManPosition.y));
 
@@ -245,6 +328,7 @@ public class Ghost : MonoBehaviour, ISpawn
 
     Vector2 GetPinkGhostTargetTile()
     {
+        //berjarak 4 tile di depan pacman
         // Four tiles ahead Pacman
         // Taking account Position and Orientation
 
@@ -277,7 +361,7 @@ public class Ghost : MonoBehaviour, ISpawn
 
         // Temporary Blinky Position
 
-        Vector2 blinkyPosition = GameObject.Find("GhostBlue").transform.localPosition;
+        Vector2 blinkyPosition = GameObject.Find("GhostBlue(Clone)").transform.localPosition;
 
         int tempBlinkyPositionX = Mathf.RoundToInt(blinkyPosition.x);
         int tempBlinkyPositionY = Mathf.RoundToInt(blinkyPosition.y);
@@ -309,12 +393,13 @@ public class Ghost : MonoBehaviour, ISpawn
         }
         else if (distance < 8)
         {
-            targetTile = homeNode.transform.position;
+            targetTile = startingPosition.transform.position;
         }
 
         return targetTile;
     }
 
+    //untuk mendapatkan posisi target node selanjutnya
     Vector2 GetTargetTile()
     {
         Vector2 targetTile = Vector2.zero;
@@ -337,7 +422,9 @@ public class Ghost : MonoBehaviour, ISpawn
         }
         return targetTile;
     }
+    #endregion
 
+    #region Release Ghost
     void ReleasePinkGhost()
     {
         if (ghostType == GhostType.Pink && isInGhostHouse)
@@ -375,7 +462,9 @@ public class Ghost : MonoBehaviour, ISpawn
         if (ghostReleaseTimer > clydeReleaseTimer)
             ReleaseOrangeGhost();
     }
+    #endregion
 
+    //untuk menentukan node yang akan dituju selanjutnya
     Node ChooseNextNode()
     {
         Vector2 targetTile = Vector2.zero;
@@ -386,7 +475,7 @@ public class Ghost : MonoBehaviour, ISpawn
         }
         else if (currentMode == Mode.Scatter)
         {
-            targetTile = homeNode.transform.position;
+            targetTile = startingPosition.transform.position;
         }
 
         Node moveToNode = null;
@@ -434,43 +523,23 @@ public class Ghost : MonoBehaviour, ISpawn
         return moveToNode;
     }
 
-    /*Node GetNodeAtPosition (Vector2 pos)
+    //untuk reset posisi ghost setelah termakan oleh pacman pada mode frightened
+    public void ResetPosition()
     {
-        GameObject tile = GameObject.Find("Game").GetComponent<GameBoard>().board[(int)pos.x, (int)pos.y];
+        transform.position = startingPosition.transform.position;
+        currentNode = startingPosition;
+        targetNode = ChooseNextNode();
+        direction = SetDirection();
+    }
 
-        if (tile != null)
-        {
-            if (tile.GetComponent<Node> () != null)
-            {
-                return tile.GetComponent<Node> ();
-            }
-        }
-
-        return null;
-    }*/
-
-    /*GameObject GetPortal (Vector2 pos)
-    {
-        GameObject tile = GameObject.Find("Game").GetComponent<GameBoard>().board[(int)pos.x, (int)pos.y];
-
-        if (tile != null)
-        {
-            if (tile.GetComponent<Tile> ().isPOrtal)
-            {
-                GameObject otherPortal = tile.GetComponent<Tile>().portalReceiver;
-                return otherPortal;
-            }
-        }
-
-        return null;
-    }*/
-
+    //untuk menghitung jarak node tertentu dari suatu posisi
     float LengthFromNode (Vector2 targetPosition)
     {
         Vector2 vec = targetPosition - (Vector2)previousNode.transform.position;
         return vec.sqrMagnitude;
     }
 
+    //untuk mendeteksi apakah ghost sudah mencapai target node atau belum
     bool OverShotTarget ()
     {
         float nodeToTarget = LengthFromNode (targetNode.transform.position);
@@ -479,6 +548,7 @@ public class Ghost : MonoBehaviour, ISpawn
         return nodeToSelf > nodeToTarget;
     }
 
+    //untuk menghitung jarak antara dua posisi
     float GetDistance (Vector2 posA, Vector2 posB)
     {
         float dx = posA.x - posB.x;
@@ -489,8 +559,10 @@ public class Ghost : MonoBehaviour, ISpawn
         return distance;
     }
 
+    //implementasi fungsi dari interface ISpawn.
+    //untuk mengatur posisi ghost saat spawn
     public void SpawnPosition(Vector2 pos)
     {
-        throw new System.NotImplementedException();
+        transform.position = pos;
     }
 }
